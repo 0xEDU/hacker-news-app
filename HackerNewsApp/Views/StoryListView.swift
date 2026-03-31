@@ -84,7 +84,9 @@ struct StoryListView: View {
                     StoryCardView(story: story)
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom)
         }
         .refreshable {
             await service.fetchTopStories()
