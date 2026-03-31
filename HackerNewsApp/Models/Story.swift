@@ -8,6 +8,7 @@ struct Story: Identifiable, Codable {
     let by: String
     let time: Int
     let descendants: Int?
+    let kids: [Int]?
     let type: String
     
     /// Returns the domain from the URL (e.g., "github.com")
@@ -41,5 +42,10 @@ struct Story: Identifiable, Codable {
     /// Comment count, defaulting to 0 if not available
     var commentCount: Int {
         descendants ?? 0
+    }
+    
+    /// Top-level comment IDs
+    var commentIDs: [Int] {
+        kids ?? []
     }
 }

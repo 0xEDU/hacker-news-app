@@ -93,4 +93,65 @@ class HackerNewsService: ObservableObject {
         let (data, _) = try await URLSession.shared.data(from: url)
         return try JSONDecoder().decode(Story.self, from: data)
     }
+    
+    // MARK: - Comments
+    
+    /// Fetches a single comment by ID
+    func fetchComment(id: Int) async throws -> Comment? {
+        guard let url = URL(string: "\(baseURL)/item/\(id).json") else {
+            throw HackerNewsError.invalidURL
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        // Handle null response (deleted comments)
+        if let jsonString = String(data: data, encoding: .utf8), jsonString == "null" {
+            return nil
+        }
+        
+        return try JSONDecoder().decode(Comment.self, from: data)
+    }
+    
+    /// Fetches comments for a story and builds a tree structure
+    func fetchCommentTrees(for story: Story, maxDepth: Int = 3) async throws -> [CommentTree] {
+        guard !story.commentIDs.isEmpty else { return [] }
+        
+        return try await fetchCommentTrees(ids: story.commentIDs, depth: 0, maxDepth: maxDepth)
+    }
+    
+    /// Recursively fetches comments and their children
+    private func fetchCommentTrees(ids: [Int], depth: Int, maxDepth: Int) async throws -> [CommentTree] {
+        // Fetch all comments at this level concurrently
+        let comments = try await withThrowingTaskGroup(of: (Int, Comment?).self) { group in
+            for id in ids {
+                group.addTask {
+                    let comment = try? await self.fetchComment(id: id)
+                    return (id, comment)
+                }
+            }
+            
+            var results: [(Int, Comment?)] = []
+            for try await result in group {
+                results.append(result)
+            }
+            return results
+        }
+        
+        // Build trees, maintaining original order
+        var trees: [CommentTree] = []
+        let commentDict = Dictionary(uniqueKeysWithValues: comments)
+        
+        for id in ids {
+            guard let comment = commentDict[id] ?? nil, comment.isValid else { continue }
+            
+            var children: [CommentTree] = []
+            if depth < maxDepth, let kidIDs = comment.kids, !kidIDs.isEmpty {
+                children = (try? await fetchCommentTrees(ids: kidIDs, depth: depth + 1, maxDepth: maxDepth)) ?? []
+            }
+            
+            trees.append(CommentTree(comment: comment, children: children, depth: depth))
+        }
+        
+        return trees
+    }
 }

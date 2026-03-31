@@ -4,6 +4,7 @@ struct StoryCardView: View {
     let story: Story
     
     @State private var isHovered = false
+    @State private var showComments = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -27,9 +28,15 @@ struct StoryCardView: View {
                 Label(story.timeAgo, systemImage: "clock")
                     .foregroundColor(.secondary)
                 
-                // Comments
-                Label("\(story.commentCount)", systemImage: "bubble.right")
-                    .foregroundColor(.secondary)
+                // Comments button
+                Button {
+                    showComments = true
+                } label: {
+                    Label("\(story.commentCount)", systemImage: "bubble.right")
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(.plain)
+                .help("View comments")
                 
                 Spacer()
                 
@@ -62,6 +69,9 @@ struct StoryCardView: View {
             openStoryInBrowser()
         }
         .cursor(.pointingHand)
+        .sheet(isPresented: $showComments) {
+            CommentsView(story: story)
+        }
     }
     
     private func openStoryInBrowser() {
@@ -93,6 +103,7 @@ extension View {
         by: "dhouston",
         time: 1175714200,
         descendants: 71,
+        kids: [8952, 9224, 8917],
         type: "story"
     ))
     .padding()

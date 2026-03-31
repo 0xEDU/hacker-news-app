@@ -14,6 +14,8 @@
 		A1000001228F0001000000005 /* HackerNewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000005 /* HackerNewsService.swift */; };
 		A1000001228F0001000000006 /* StoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000006 /* StoryCardView.swift */; };
 		A1000001228F0001000000007 /* StoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000007 /* StoryListView.swift */; };
+		A1000001228F0001000000008 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000008 /* Comment.swift */; };
+		A1000001228F0001000000009 /* CommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000009 /* CommentsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		A1000001228F0002000000005 /* HackerNewsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsService.swift; sourceTree = "<group>"; };
 		A1000001228F0002000000006 /* StoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCardView.swift; sourceTree = "<group>"; };
 		A1000001228F0002000000007 /* StoryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListView.swift; sourceTree = "<group>"; };
+		A1000001228F0002000000008 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		A1000001228F0002000000009 /* CommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsView.swift; sourceTree = "<group>"; };
 		A1000001228F0003000000001 /* HackerNewsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HackerNewsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				A1000001228F0002000000004 /* Story.swift */,
+				A1000001228F0002000000008 /* Comment.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -88,6 +93,7 @@
 			children = (
 				A1000001228F0002000000006 /* StoryCardView.swift */,
 				A1000001228F0002000000007 /* StoryListView.swift */,
+				A1000001228F0002000000009 /* CommentsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -164,9 +170,11 @@
 				A1000001228F0001000000001 /* HackerNewsAppApp.swift in Sources */,
 				A1000001228F0001000000002 /* ContentView.swift in Sources */,
 				A1000001228F0001000000004 /* Story.swift in Sources */,
+				A1000001228F0001000000008 /* Comment.swift in Sources */,
 				A1000001228F0001000000005 /* HackerNewsService.swift in Sources */,
 				A1000001228F0001000000006 /* StoryCardView.swift in Sources */,
 				A1000001228F0001000000007 /* StoryListView.swift in Sources */,
+				A1000001228F0001000000009 /* CommentsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
