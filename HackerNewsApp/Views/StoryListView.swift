@@ -4,13 +4,36 @@ struct StoryListView: View {
     @StateObject private var service = HackerNewsService()
     
     var body: some View {
-        Group {
-            if service.isLoading && service.stories.isEmpty {
-                loadingView
-            } else if let error = service.error {
-                errorView(error: error)
-            } else {
-                storyList
+        NavigationStack {
+            Group {
+                if service.isLoading && service.stories.isEmpty {
+                    loadingView
+                } else if let error = service.error {
+                    errorView(error: error)
+                } else {
+                    storyList
+                }
+            }
+            .navigationTitle("Hacker News")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        Task {
+                            await service.fetchTopStories()
+                        }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                            .rotationEffect(.degrees(service.isLoading ? 360 : 0))
+                            .animation(
+                                service.isLoading 
+                                    ? .linear(duration: 1).repeatForever(autoreverses: false)
+                                    : .default,
+                                value: service.isLoading
+                            )
+                    }
+                    .disabled(service.isLoading)
+                    .help("Refresh stories")
+                }
             }
         }
         .frame(minWidth: 600, minHeight: 400)
