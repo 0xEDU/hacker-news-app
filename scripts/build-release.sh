@@ -9,6 +9,7 @@ set -e  # Exit on error
 
 # Configuration
 SCHEME="HackerNewsApp"
+APP_NAME="Hacker News"
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="${PROJECT_DIR}/build/Release"
 CONFIGURATION="Release"
@@ -77,16 +78,17 @@ else
 
     # Check if build succeeded
     if [ ${PIPESTATUS[0]} -eq 0 ]; then
-        # Copy the app to build directory
+        # Copy the app to build directory with display name
         APP_PATH="${BUILD_DIR}/DerivedData/Build/Products/${CONFIGURATION}/${SCHEME}.app"
+        FINAL_APP_PATH="${BUILD_DIR}/${APP_NAME}.app"
         if [ -d "${APP_PATH}" ]; then
-            cp -R "${APP_PATH}" "${BUILD_DIR}/"
+            cp -R "${APP_PATH}" "${FINAL_APP_PATH}"
             echo ""
             echo -e "${GREEN}Build succeeded!${NC}"
-            echo -e "App location: ${BUILD_DIR}/${SCHEME}.app"
+            echo -e "App location: ${FINAL_APP_PATH}"
             
             # Show app size
-            APP_SIZE=$(du -sh "${BUILD_DIR}/${SCHEME}.app" | cut -f1)
+            APP_SIZE=$(du -sh "${FINAL_APP_PATH}" | cut -f1)
             echo -e "App size: ${APP_SIZE}"
         else
             echo -e "${RED}Build completed but app not found at expected location${NC}"
