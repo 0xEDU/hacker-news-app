@@ -25,6 +25,11 @@ class HackerNewsService: ObservableObject {
     
     private let baseURL = "https://hacker-news.firebaseio.com/v0"
     private let storyCount = 30
+    private let session: URLSession
+    
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
     
     func fetchTopStories() async {
         isLoading = true
@@ -57,7 +62,7 @@ class HackerNewsService: ObservableObject {
         }
         
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+            let (data, _) = try await session.data(from: url)
             let ids = try JSONDecoder().decode([Int].self, from: data)
             return ids
         } catch let error as DecodingError {
@@ -90,7 +95,7 @@ class HackerNewsService: ObservableObject {
             throw HackerNewsError.invalidURL
         }
         
-        let (data, _) = try await URLSession.shared.data(from: url)
+        let (data, _) = try await session.data(from: url)
         return try JSONDecoder().decode(Story.self, from: data)
     }
     
@@ -102,7 +107,7 @@ class HackerNewsService: ObservableObject {
             throw HackerNewsError.invalidURL
         }
         
-        let (data, _) = try await URLSession.shared.data(from: url)
+        let (data, _) = try await session.data(from: url)
         
         // Handle null response (deleted comments)
         if let jsonString = String(data: data, encoding: .utf8), jsonString == "null" {

@@ -16,7 +16,22 @@
 		A1000001228F0001000000007 /* StoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000007 /* StoryListView.swift */; };
 		A1000001228F0001000000008 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000008 /* Comment.swift */; };
 		A1000001228F0001000000009 /* CommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000009 /* CommentsView.swift */; };
+		A2000001228F0001000000001 /* StoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000001 /* StoryTests.swift */; };
+		A2000001228F0001000000002 /* CommentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000002 /* CommentTests.swift */; };
+		A2000001228F0001000000003 /* HackerNewsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000003 /* HackerNewsServiceTests.swift */; };
+		A2000001228F0001000000004 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000004 /* MockURLProtocol.swift */; };
+		A2000001228F0001000000005 /* TestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000005 /* TestFixtures.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A2000001228F0010000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1000001228F000A000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1000001228F0006000000001;
+			remoteInfo = HackerNewsApp;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A1000001228F0002000000001 /* HackerNewsAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsAppApp.swift; sourceTree = "<group>"; };
@@ -29,10 +44,23 @@
 		A1000001228F0002000000008 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		A1000001228F0002000000009 /* CommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsView.swift; sourceTree = "<group>"; };
 		A1000001228F0003000000001 /* HackerNewsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HackerNewsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000001228F0002000000001 /* StoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTests.swift; sourceTree = "<group>"; };
+		A2000001228F0002000000002 /* CommentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTests.swift; sourceTree = "<group>"; };
+		A2000001228F0002000000003 /* HackerNewsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsServiceTests.swift; sourceTree = "<group>"; };
+		A2000001228F0002000000004 /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
+		A2000001228F0002000000005 /* TestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFixtures.swift; sourceTree = "<group>"; };
+		A2000001228F0003000000001 /* HackerNewsAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HackerNewsAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A1000001228F0004000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2000001228F0004000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -46,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				A1000001228F0005000000002 /* HackerNewsApp */,
+				A2000001228F0005000000001 /* HackerNewsAppTests */,
 				A1000001228F0005000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				A1000001228F0003000000001 /* HackerNewsApp.app */,
+				A2000001228F0003000000001 /* HackerNewsAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +128,42 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		A2000001228F0005000000001 /* HackerNewsAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				A2000001228F0005000000002 /* Models */,
+				A2000001228F0005000000003 /* Services */,
+				A2000001228F0005000000004 /* Helpers */,
+			);
+			path = HackerNewsAppTests;
+			sourceTree = "<group>";
+		};
+		A2000001228F0005000000002 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A2000001228F0002000000001 /* StoryTests.swift */,
+				A2000001228F0002000000002 /* CommentTests.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A2000001228F0005000000003 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A2000001228F0002000000003 /* HackerNewsServiceTests.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A2000001228F0005000000004 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				A2000001228F0002000000004 /* MockURLProtocol.swift */,
+				A2000001228F0002000000005 /* TestFixtures.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -118,6 +184,24 @@
 			productReference = A1000001228F0003000000001 /* HackerNewsApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A2000001228F0006000000001 /* HackerNewsAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2000001228F0007000000001 /* Build configuration list for PBXNativeTarget "HackerNewsAppTests" */;
+			buildPhases = (
+				A2000001228F0008000000001 /* Sources */,
+				A2000001228F0004000000001 /* Frameworks */,
+				A2000001228F0009000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A2000001228F0011000000001 /* PBXTargetDependency */,
+			);
+			name = HackerNewsAppTests;
+			productName = HackerNewsAppTests;
+			productReference = A2000001228F0003000000001 /* HackerNewsAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -130,6 +214,10 @@
 				TargetAttributes = {
 					A1000001228F0006000000001 = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					A2000001228F0006000000001 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = A1000001228F0006000000001;
 					};
 				};
 			};
@@ -147,6 +235,7 @@
 			projectRoot = "";
 			targets = (
 				A1000001228F0006000000001 /* HackerNewsApp */,
+				A2000001228F0006000000001 /* HackerNewsAppTests */,
 			);
 		};
 /* End PBXProject section */
@@ -157,6 +246,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000001228F0001000000003 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2000001228F0009000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,7 +274,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A2000001228F0008000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2000001228F0001000000001 /* StoryTests.swift in Sources */,
+				A2000001228F0001000000002 /* CommentTests.swift in Sources */,
+				A2000001228F0001000000003 /* HackerNewsServiceTests.swift in Sources */,
+				A2000001228F0001000000004 /* MockURLProtocol.swift in Sources */,
+				A2000001228F0001000000005 /* TestFixtures.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A2000001228F0011000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1000001228F0006000000001 /* HackerNewsApp */;
+			targetProxy = A2000001228F0010000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A1000001228F000C000000001 /* Debug */ = {
@@ -365,6 +481,40 @@
 			};
 			name = Release;
 		};
+		A2000001228F000D000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.HackerNewsAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HackerNewsApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HackerNewsApp";
+			};
+			name = Debug;
+		};
+		A2000001228F000D000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.HackerNewsAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HackerNewsApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HackerNewsApp";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -382,6 +532,15 @@
 			buildConfigurations = (
 				A1000001228F000C000000001 /* Debug */,
 				A1000001228F000C000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A2000001228F0007000000001 /* Build configuration list for PBXNativeTarget "HackerNewsAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2000001228F000D000000001 /* Debug */,
+				A2000001228F000D000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
