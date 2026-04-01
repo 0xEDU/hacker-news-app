@@ -1,5 +1,5 @@
-import XCTest
 @testable import HackerNewsApp
+import XCTest
 
 final class CommentTests: XCTestCase {
     
@@ -143,7 +143,7 @@ final class CommentTests: XCTestCase {
             "parent": 8863,
             "type": "comment"
         }
-        """.data(using: .utf8)!
+        """.data(using: .utf8) ?? Data()
         
         let comment = try JSONDecoder().decode(Comment.self, from: json)
         
@@ -163,7 +163,7 @@ final class CommentTests: XCTestCase {
             "type": "comment",
             "deleted": true
         }
-        """.data(using: .utf8)!
+        """.data(using: .utf8) ?? Data()
         
         let comment = try JSONDecoder().decode(Comment.self, from: json)
         
@@ -182,7 +182,7 @@ final class CommentTests: XCTestCase {
             "type": "comment",
             "dead": true
         }
-        """.data(using: .utf8)!
+        """.data(using: .utf8) ?? Data()
         
         let comment = try JSONDecoder().decode(Comment.self, from: json)
         

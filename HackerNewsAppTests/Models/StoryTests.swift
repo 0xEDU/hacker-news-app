@@ -1,5 +1,5 @@
-import XCTest
 @testable import HackerNewsApp
+import XCTest
 
 final class StoryTests: XCTestCase {
     
@@ -104,7 +104,7 @@ final class StoryTests: XCTestCase {
             "kids": [1, 2, 3],
             "type": "story"
         }
-        """.data(using: .utf8)!
+        """.data(using: .utf8) ?? Data()
         
         let story = try JSONDecoder().decode(Story.self, from: json)
         
@@ -126,7 +126,7 @@ final class StoryTests: XCTestCase {
             "time": 0,
             "type": "story"
         }
-        """.data(using: .utf8)!
+        """.data(using: .utf8) ?? Data()
         
         let story = try JSONDecoder().decode(Story.self, from: json)
         

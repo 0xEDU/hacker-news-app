@@ -65,9 +65,9 @@ enum TestFixtures {
         "kids": [8952, 9224],
         "type": "story"
     }
-    """.data(using: .utf8)!
+    """.data(using: .utf8) ?? Data()
     
-    static let topStoriesJSON = "[8863, 8864, 8865]".data(using: .utf8)!
+    static let topStoriesJSON = "[8863, 8864, 8865]".data(using: .utf8) ?? Data()
     
     // MARK: - Comments
     
@@ -153,7 +153,7 @@ enum TestFixtures {
         "parent": 8863,
         "type": "comment"
     }
-    """.data(using: .utf8)!
+    """.data(using: .utf8) ?? Data()
     
     static let comment2JSON = """
     {
@@ -164,7 +164,7 @@ enum TestFixtures {
         "parent": 8863,
         "type": "comment"
     }
-    """.data(using: .utf8)!
+    """.data(using: .utf8) ?? Data()
     
     // MARK: - Mock Session
     

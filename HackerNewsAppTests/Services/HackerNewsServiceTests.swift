@@ -1,5 +1,5 @@
-import XCTest
 @testable import HackerNewsApp
+import XCTest
 
 @MainActor
 final class HackerNewsServiceTests: XCTestCase {
@@ -21,7 +21,7 @@ final class HackerNewsServiceTests: XCTestCase {
     func test_fetchTopStories_whenAPIReturnsValidData_shouldPopulateStories() async {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
-            .success("[8863]".data(using: .utf8)!)
+            .success("[8863]".data(using: .utf8) ?? Data())
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/item/8863.json"] =
             .success(TestFixtures.storyJSON)
         
@@ -50,7 +50,7 @@ final class HackerNewsServiceTests: XCTestCase {
     func test_fetchTopStories_whenJSONIsInvalid_shouldSetDecodingError() async {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
-            .success("invalid json".data(using: .utf8)!)
+            .success("invalid json".data(using: .utf8) ?? Data())
         
         // Act
         await sut.fetchTopStories()
@@ -62,7 +62,7 @@ final class HackerNewsServiceTests: XCTestCase {
     func test_fetchTopStories_whenCompleted_shouldSetIsLoadingFalse() async {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
-            .success("[]".data(using: .utf8)!)
+            .success("[]".data(using: .utf8) ?? Data())
         
         // Act
         await sut.fetchTopStories()
@@ -74,7 +74,7 @@ final class HackerNewsServiceTests: XCTestCase {
     func test_fetchTopStories_whenAPIReturnsEmptyArray_shouldHaveEmptyStories() async {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
-            .success("[]".data(using: .utf8)!)
+            .success("[]".data(using: .utf8) ?? Data())
         
         // Act
         await sut.fetchTopStories()
@@ -102,7 +102,7 @@ final class HackerNewsServiceTests: XCTestCase {
     func test_fetchComment_whenResponseIsNull_shouldReturnNil() async throws {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/item/8999.json"] =
-            .success("null".data(using: .utf8)!)
+            .success("null".data(using: .utf8) ?? Data())
         
         // Act
         let comment = try await sut.fetchComment(id: 8999)
@@ -136,7 +136,7 @@ final class HackerNewsServiceTests: XCTestCase {
             "parent": 8863,
             "type": "comment"
         }
-        """.data(using: .utf8)!
+        """.data(using: .utf8) ?? Data()
         let comment2JSON = """
         {
             "id": 9224,
@@ -146,7 +146,7 @@ final class HackerNewsServiceTests: XCTestCase {
             "parent": 8863,
             "type": "comment"
         }
-        """.data(using: .utf8)!
+        """.data(using: .utf8) ?? Data()
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/item/8952.json"] =
             .success(comment1JSON)
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/item/9224.json"] =
@@ -195,7 +195,7 @@ final class HackerNewsServiceTests: XCTestCase {
             type: "story"
         )
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/item/8999.json"] =
-            .success("null".data(using: .utf8)!)
+            .success("null".data(using: .utf8) ?? Data())
         
         // Act
         let trees = try await sut.fetchCommentTrees(for: story)

@@ -1,0 +1,52 @@
+included:
+  - HackerNewsApp
+  - HackerNewsAppTests
+
+excluded:
+  - build
+  - DerivedData
+  - .build
+  - HackerNewsApp.xcodeproj
+
+line_length:
+  warning: 120
+  error: 140
+
+file_length:
+  warning: 500
+  error: 700
+
+type_body_length:
+  warning: 350
+  error: 500
+
+function_body_length:
+  warning: 60
+  error: 90
+
+cyclomatic_complexity:
+  warning: 12
+  error: 18
+
+identifier_name:
+  min_length:
+    warning: 2
+  max_length:
+    warning: 50
+    error: 60
+  excluded:
+    - id
+
+disabled_rules:
+  - todo
+  - trailing_whitespace
+  - static_over_final_class
+  - non_optional_string_data_conversion
+
+opt_in_rules:
+  - empty_count
+  - explicit_init
+  - implicit_return
+  - sorted_imports
+
+reporter: "xcode"
