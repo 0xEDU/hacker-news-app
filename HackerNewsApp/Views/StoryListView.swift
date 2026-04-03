@@ -2,6 +2,8 @@ import SwiftUI
 
 struct StoryListView: View {
     @StateObject private var service = HackerNewsService()
+    @State private var searchText = ""
+    @State private var searchTask: Task<Void, Never>?
     
     var body: some View {
         NavigationStack {
@@ -10,11 +12,14 @@ struct StoryListView: View {
                     loadingView
                 } else if let error = service.error {
                     errorView(error: error)
+                } else if service.stories.isEmpty {
+                    emptyView
                 } else {
                     storyList
                 }
             }
             .navigationTitle("Hacker News")
+            .searchable(text: $searchText, prompt: "Search stories")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -39,6 +44,14 @@ struct StoryListView: View {
         .frame(minWidth: 600, minHeight: 400)
         .task {
             await service.fetchTopStories()
+        }
+        .onChange(of: searchText) {
+            searchTask?.cancel()
+            searchTask = Task {
+                try? await Task.sleep(nanoseconds: 350_000_000)
+                guard !Task.isCancelled else { return }
+                await service.searchStories(query: searchText)
+            }
         }
     }
     
@@ -91,6 +104,21 @@ struct StoryListView: View {
         .refreshable {
             await service.fetchTopStories()
         }
+    }
+    
+    private var emptyView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 28))
+                .foregroundColor(.secondary)
+            Text(searchText.isEmpty ? "No stories available" : "No stories found")
+                .font(.headline)
+            Text(searchText.isEmpty
+                ? "Try refreshing to fetch the latest stories."
+                : "Try a different search term.")
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

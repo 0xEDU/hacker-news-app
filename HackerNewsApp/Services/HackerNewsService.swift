@@ -24,8 +24,10 @@ class HackerNewsService: ObservableObject {
     @Published var error: HackerNewsError?
     
     private let baseURL = "https://hacker-news.firebaseio.com/v0"
+    private let searchBaseURL = "https://hn.algolia.com/api/v1/search"
     private let storyCount = 30
     private let session: URLSession
+    private var topStoriesCache: [Story] = []
     
     init(session: URLSession = .shared) {
         self.session = session
@@ -45,7 +47,9 @@ class HackerNewsService: ObservableObject {
             
             // Sort by the original top stories order
             let idOrder = Dictionary(uniqueKeysWithValues: limitedIDs.enumerated().map { ($1, $0) })
-            stories = fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
+            let sortedStories = fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
+            stories = sortedStories
+            topStoriesCache = sortedStories
             
         } catch let hnError as HackerNewsError {
             error = hnError
@@ -54,6 +58,34 @@ class HackerNewsService: ObservableObject {
         }
         
         isLoading = false
+    }
+
+    func searchStories(query: String) async {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else {
+            restoreTopStories()
+            return
+        }
+
+        isLoading = true
+        error = nil
+
+        do {
+            stories = try await fetchSearchStories(query: trimmedQuery)
+        } catch let hnError as HackerNewsError {
+            error = hnError
+        } catch {
+            self.error = .networkError(error)
+        }
+
+        isLoading = false
+    }
+
+    func restoreTopStories() {
+        error = nil
+        if !topStoriesCache.isEmpty {
+            stories = topStoriesCache
+        }
     }
     
     private func fetchStoryIDs() async throws -> [Int] {
@@ -87,6 +119,28 @@ class HackerNewsService: ObservableObject {
                 }
             }
             return stories
+        }
+    }
+
+    private func fetchSearchStories(query: String) async throws -> [Story] {
+        var components = URLComponents(string: searchBaseURL)
+        components?.queryItems = [
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "tags", value: "story")
+        ]
+
+        guard let url = components?.url else {
+            throw HackerNewsError.invalidURL
+        }
+
+        do {
+            let (data, _) = try await session.data(from: url)
+            let response = try JSONDecoder().decode(SearchResponse.self, from: data)
+            return response.hits.compactMap { $0.asStory }
+        } catch let error as DecodingError {
+            throw HackerNewsError.decodingError(error)
+        } catch {
+            throw HackerNewsError.networkError(error)
         }
     }
     
@@ -158,5 +212,51 @@ class HackerNewsService: ObservableObject {
         }
         
         return trees
+    }
+}
+
+private struct SearchResponse: Decodable {
+    let hits: [SearchHit]
+}
+
+private struct SearchHit: Decodable {
+    let objectID: String
+    let title: String?
+    let storyTitle: String?
+    let url: String?
+    let storyURL: String?
+    let points: Int?
+    let author: String?
+    let createdAtI: Int?
+    let numComments: Int?
+
+    var asStory: Story? {
+        guard let id = Int(objectID) else {
+            return nil
+        }
+
+        return Story(
+            id: id,
+            title: title ?? storyTitle ?? "Untitled",
+            url: url ?? storyURL,
+            score: points ?? 0,
+            by: author ?? "unknown",
+            time: createdAtI ?? 0,
+            descendants: numComments,
+            kids: nil,
+            type: "story"
+        )
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case objectID
+        case title
+        case storyTitle = "story_title"
+        case url
+        case storyURL = "story_url"
+        case points
+        case author
+        case createdAtI = "created_at_i"
+        case numComments = "num_comments"
     }
 }
