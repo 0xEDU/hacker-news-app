@@ -13,12 +13,6 @@ struct StoryCardView: View {
                 .font(.headline)
                 .foregroundColor(.primary)
                 .lineLimit(2)
-
-            HStack {
-                Spacer()
-
-                commentsButton
-            }
              
             // Metadata row
             HStack(spacing: 12) {
@@ -33,6 +27,8 @@ struct StoryCardView: View {
                 // Time
                 Label(story.timeAgo, systemImage: "clock")
                     .foregroundColor(.secondary)
+
+                commentsButton
                 
                 Spacer()
                 
@@ -75,13 +71,13 @@ struct StoryCardView: View {
         Button {
             showComments = true
         } label: {
-            Label("\(story.commentCount) Comments", systemImage: "bubble.right.fill")
-                .font(.subheadline.weight(.semibold))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
+            Label("\(story.commentCount)", systemImage: "bubble.right")
+                .font(.caption.weight(.semibold))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
         }
-        .buttonStyle(.borderedProminent)
-        .tint(.blue)
+        .buttonStyle(.bordered)
+        .controlSize(.small)
         .help("View comments")
     }
      
