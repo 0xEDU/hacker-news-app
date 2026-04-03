@@ -198,23 +198,39 @@ class HackerNewsService: ObservableObject {
             }
             return results
         }
-        
-        // Build trees, maintaining original order
-        var trees: [CommentTree] = []
         let commentDict = Dictionary(uniqueKeysWithValues: comments)
-        
-        for id in ids {
-            guard let comment = commentDict[id] ?? nil, comment.isValid else { continue }
-            
-            var children: [CommentTree] = []
-            if depth < maxDepth, let kidIDs = comment.kids, !kidIDs.isEmpty {
-                children = (try? await fetchCommentTrees(ids: kidIDs, depth: depth + 1, maxDepth: maxDepth)) ?? []
+
+        // Build trees in parallel while preserving original order.
+        let indexedTrees = try await withThrowingTaskGroup(of: (Int, CommentTree?).self) { group in
+            for (index, id) in ids.enumerated() {
+                group.addTask {
+                    guard let comment = commentDict[id] ?? nil, comment.isValid else {
+                        return (index, nil)
+                    }
+
+                    var children: [CommentTree] = []
+                    if depth < maxDepth, let kidIDs = comment.kids, !kidIDs.isEmpty {
+                        children = (try? await self.fetchCommentTrees(
+                            ids: kidIDs,
+                            depth: depth + 1,
+                            maxDepth: maxDepth
+                        )) ?? []
+                    }
+
+                    return (index, CommentTree(comment: comment, children: children, depth: depth))
+                }
             }
-            
-            trees.append(CommentTree(comment: comment, children: children, depth: depth))
+
+            var results: [(Int, CommentTree?)] = []
+            for try await result in group {
+                results.append(result)
+            }
+            return results
         }
-        
-        return trees
+
+        return indexedTrees
+            .sorted { $0.0 < $1.0 }
+            .compactMap { $0.1 }
     }
 }
 
