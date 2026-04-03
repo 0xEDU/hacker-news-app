@@ -215,16 +215,20 @@ struct CommentTreeView: View {
     }
 }
 
-#Preview {
-    CommentsView(story: Story(
-        id: 8863,
-        title: "My YC app: Dropbox - Throw away your USB drive",
-        url: "http://www.getdropbox.com/u/2/screencast.html",
-        score: 104,
-        by: "dhouston",
-        time: 1175714200,
-        descendants: 71,
-        kids: [8952, 9224, 8917],
-        type: "story"
-    ))
+#if DEBUG
+struct CommentsView_Previews: PreviewProvider {
+    static var previews: some View {
+        CommentsView(story: Story(
+            id: 8863,
+            title: "My YC app: Dropbox - Throw away your USB drive",
+            url: "http://www.getdropbox.com/u/2/screencast.html",
+            score: 104,
+            by: "dhouston",
+            time: 1175714200,
+            descendants: 71,
+            kids: [8952, 9224, 8917],
+            type: "story"
+        ))
+    }
 }
+#endif

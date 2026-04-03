@@ -130,6 +130,10 @@ struct StoryListView: View {
     }
 }
 
-#Preview {
-    StoryListView()
+#if DEBUG
+struct StoryListView_Previews: PreviewProvider {
+    static var previews: some View {
+        StoryListView()
+    }
 }
+#endif
