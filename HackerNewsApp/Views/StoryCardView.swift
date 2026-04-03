@@ -1,10 +1,22 @@
 import SwiftUI
 
+@MainActor
 struct StoryCardView: View {
     let story: Story
+    @StateObject private var commentsViewModel: CommentsViewModel
     
     @State private var isHovered = false
     @State private var showComments = false
+
+    init(story: Story) {
+        self.story = story
+        _commentsViewModel = StateObject(wrappedValue: CommentsViewModel())
+    }
+
+    init(story: Story, commentsViewModel: CommentsViewModel) {
+        self.story = story
+        _commentsViewModel = StateObject(wrappedValue: commentsViewModel)
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -62,7 +74,7 @@ struct StoryCardView: View {
         }
         .cursor(.pointingHand)
         .popover(isPresented: $showComments, arrowEdge: .top) {
-            CommentsView(story: story)
+            CommentsView(story: story, viewModel: commentsViewModel)
                 .frame(minWidth: 520, minHeight: 420)
         }
     }
@@ -89,6 +101,7 @@ struct StoryCardView: View {
 }
 
 // Custom cursor modifier for macOS
+@MainActor
 extension View {
     func cursor(_ cursor: NSCursor) -> some View {
         self.onHover { inside in
