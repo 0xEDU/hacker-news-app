@@ -71,7 +71,10 @@ class HackerNewsService: ObservableObject {
         error = nil
 
         do {
-            stories = try await fetchSearchStories(query: trimmedQuery)
+            let searchIDs = try await fetchSearchStoryIDs(query: trimmedQuery)
+            let fetchedStories = try await fetchStories(ids: searchIDs)
+            let idOrder = Dictionary(uniqueKeysWithValues: searchIDs.enumerated().map { ($1, $0) })
+            stories = fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
         } catch let hnError as HackerNewsError {
             error = hnError
         } catch {
@@ -122,7 +125,7 @@ class HackerNewsService: ObservableObject {
         }
     }
 
-    private func fetchSearchStories(query: String) async throws -> [Story] {
+    private func fetchSearchStoryIDs(query: String) async throws -> [Int] {
         var components = URLComponents(string: searchBaseURL)
         components?.queryItems = [
             URLQueryItem(name: "query", value: query),
@@ -136,7 +139,7 @@ class HackerNewsService: ObservableObject {
         do {
             let (data, _) = try await session.data(from: url)
             let response = try JSONDecoder().decode(SearchResponse.self, from: data)
-            return response.hits.compactMap { $0.asStory }
+            return response.hits.compactMap(\.storyID)
         } catch let error as DecodingError {
             throw HackerNewsError.decodingError(error)
         } catch {
@@ -221,42 +224,9 @@ private struct SearchResponse: Decodable {
 
 private struct SearchHit: Decodable {
     let objectID: String
-    let title: String?
-    let storyTitle: String?
-    let url: String?
-    let storyURL: String?
-    let points: Int?
-    let author: String?
-    let createdAtI: Int?
-    let numComments: Int?
-
-    var asStory: Story? {
-        guard let id = Int(objectID) else {
-            return nil
-        }
-
-        return Story(
-            id: id,
-            title: title ?? storyTitle ?? "Untitled",
-            url: url ?? storyURL,
-            score: points ?? 0,
-            by: author ?? "unknown",
-            time: createdAtI ?? 0,
-            descendants: numComments,
-            kids: nil,
-            type: "story"
-        )
-    }
+    var storyID: Int? { Int(objectID) }
 
     enum CodingKeys: String, CodingKey {
         case objectID
-        case title
-        case storyTitle = "story_title"
-        case url
-        case storyURL = "story_url"
-        case points
-        case author
-        case createdAtI = "created_at_i"
-        case numComments = "num_comments"
     }
 }
