@@ -65,8 +65,9 @@ struct StoryCardView: View {
             openStoryInBrowser()
         }
         .cursor(.pointingHand)
-        .sheet(isPresented: $showComments) {
+        .popover(isPresented: $showComments, arrowEdge: .top) {
             CommentsView(story: story)
+                .frame(minWidth: 520, minHeight: 420)
         }
     }
 
