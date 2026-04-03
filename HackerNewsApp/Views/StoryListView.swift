@@ -65,7 +65,7 @@ struct StoryListView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    private func errorView(error: HackerNewsError) -> some View {
+    private func errorView(error: HackerNewsErrorEnum) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
@@ -120,6 +120,11 @@ struct StoryListView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+}
+
+@MainActor
+class StoryListViewModel: ObservableObject {
+    private let service = HackerNewsService()
 }
 
 #Preview {

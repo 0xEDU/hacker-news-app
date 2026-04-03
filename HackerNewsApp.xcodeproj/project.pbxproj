@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		75BA24982F800B570075EE5E /* HackerNewsErrorEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA24972F800B570075EE5E /* HackerNewsErrorEnum.swift */; };
 		A1000001228F0001000000001 /* HackerNewsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000001 /* HackerNewsApp.swift */; };
 		A1000001228F0001000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000002 /* ContentView.swift */; };
 		A1000001228F0001000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000001228F0002000000003 /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		75BA24972F800B570075EE5E /* HackerNewsErrorEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsErrorEnum.swift; sourceTree = "<group>"; };
 		A1000001228F0002000000001 /* HackerNewsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsApp.swift; sourceTree = "<group>"; };
 		A1000001228F0002000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1000001228F0002000000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -70,6 +72,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		75BA249A2F800BA90075EE5E /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				75BA24972F800B570075EE5E /* HackerNewsErrorEnum.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
 		A1000001228F0005000000001 = {
 			isa = PBXGroup;
 			children = (
@@ -82,6 +92,7 @@
 		A1000001228F0005000000002 /* HackerNewsApp */ = {
 			isa = PBXGroup;
 			children = (
+				75BA249A2F800BA90075EE5E /* Enums */,
 				A1000001228F0002000000001 /* HackerNewsApp.swift */,
 				A1000001228F0002000000002 /* ContentView.swift */,
 				A1000001228F0005000000004 /* Models */,
@@ -293,6 +304,7 @@
 				A1000001228F0001000000005 /* HackerNewsService.swift in Sources */,
 				A1000001228F0001000000006 /* StoryCardView.swift in Sources */,
 				A1000001228F0001000000007 /* StoryListView.swift in Sources */,
+				75BA24982F800B570075EE5E /* HackerNewsErrorEnum.swift in Sources */,
 				A1000001228F0001000000009 /* CommentsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

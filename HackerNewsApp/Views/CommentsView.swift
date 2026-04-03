@@ -77,7 +77,7 @@ struct CommentsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    private func errorView(error: HackerNewsError) -> some View {
+    private func errorView(error: HackerNewsErrorEnum) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 36))
@@ -210,7 +210,7 @@ struct CommentTreeView: View {
 class CommentsViewModel: ObservableObject {
     @Published var comments: [CommentTree] = []
     @Published var isLoading = false
-    @Published var error: HackerNewsError?
+    @Published var error: HackerNewsErrorEnum?
     
     private let service = HackerNewsService()
     
@@ -220,7 +220,7 @@ class CommentsViewModel: ObservableObject {
         
         do {
             comments = try await service.fetchCommentTrees(for: story, maxDepth: 5)
-        } catch let hnError as HackerNewsError {
+        } catch let hnError as HackerNewsErrorEnum {
             error = hnError
         } catch {
             self.error = .networkError(error)

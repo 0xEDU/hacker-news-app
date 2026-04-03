@@ -1,27 +1,10 @@
 import Foundation
 
-enum HackerNewsError: Error, LocalizedError {
-    case invalidURL
-    case networkError(Error)
-    case decodingError(Error)
-    
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "Invalid URL"
-        case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
-        case .decodingError(let error):
-            return "Failed to decode response: \(error.localizedDescription)"
-        }
-    }
-}
-
 @MainActor
 class HackerNewsService: ObservableObject {
     @Published var stories: [Story] = []
     @Published var isLoading = false
-    @Published var error: HackerNewsError?
+    @Published var error: HackerNewsErrorEnum?
     
     private let baseURL = "https://hacker-news.firebaseio.com/v0"
     private let searchBaseURL = "https://hn.algolia.com/api/v1/search"
@@ -51,7 +34,7 @@ class HackerNewsService: ObservableObject {
             stories = sortedStories
             topStoriesCache = sortedStories
             
-        } catch let hnError as HackerNewsError {
+        } catch let hnError as HackerNewsErrorEnum {
             error = hnError
         } catch {
             self.error = .networkError(error)
@@ -75,7 +58,7 @@ class HackerNewsService: ObservableObject {
             let fetchedStories = try await fetchStories(ids: searchIDs)
             let idOrder = Dictionary(uniqueKeysWithValues: searchIDs.enumerated().map { ($1, $0) })
             stories = fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
-        } catch let hnError as HackerNewsError {
+        } catch let hnError as HackerNewsErrorEnum {
             error = hnError
         } catch {
             self.error = .networkError(error)
@@ -93,7 +76,7 @@ class HackerNewsService: ObservableObject {
     
     private func fetchStoryIDs() async throws -> [Int] {
         guard let url = URL(string: "\(baseURL)/topstories.json") else {
-            throw HackerNewsError.invalidURL
+            throw HackerNewsErrorEnum.invalidURL
         }
         
         do {
@@ -101,9 +84,9 @@ class HackerNewsService: ObservableObject {
             let ids = try JSONDecoder().decode([Int].self, from: data)
             return ids
         } catch let error as DecodingError {
-            throw HackerNewsError.decodingError(error)
+            throw HackerNewsErrorEnum.decodingError(error)
         } catch {
-            throw HackerNewsError.networkError(error)
+            throw HackerNewsErrorEnum.networkError(error)
         }
     }
     
@@ -133,7 +116,7 @@ class HackerNewsService: ObservableObject {
         ]
 
         guard let url = components?.url else {
-            throw HackerNewsError.invalidURL
+            throw HackerNewsErrorEnum.invalidURL
         }
 
         do {
@@ -141,15 +124,15 @@ class HackerNewsService: ObservableObject {
             let response = try JSONDecoder().decode(SearchResponse.self, from: data)
             return response.hits.compactMap(\.storyID)
         } catch let error as DecodingError {
-            throw HackerNewsError.decodingError(error)
+            throw HackerNewsErrorEnum.decodingError(error)
         } catch {
-            throw HackerNewsError.networkError(error)
+            throw HackerNewsErrorEnum.networkError(error)
         }
     }
     
     private func fetchStory(id: Int) async throws -> Story {
         guard let url = URL(string: "\(baseURL)/item/\(id).json") else {
-            throw HackerNewsError.invalidURL
+            throw HackerNewsErrorEnum.invalidURL
         }
         
         let (data, _) = try await session.data(from: url)
@@ -161,7 +144,7 @@ class HackerNewsService: ObservableObject {
     /// Fetches a single comment by ID
     func fetchComment(id: Int) async throws -> Comment? {
         guard let url = URL(string: "\(baseURL)/item/\(id).json") else {
-            throw HackerNewsError.invalidURL
+            throw HackerNewsErrorEnum.invalidURL
         }
         
         let (data, _) = try await session.data(from: url)
