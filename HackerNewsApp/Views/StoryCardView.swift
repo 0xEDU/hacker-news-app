@@ -13,7 +13,13 @@ struct StoryCardView: View {
                 .font(.headline)
                 .foregroundColor(.primary)
                 .lineLimit(2)
-            
+
+            HStack {
+                Spacer()
+
+                commentsButton
+            }
+             
             // Metadata row
             HStack(spacing: 12) {
                 // Score
@@ -27,16 +33,6 @@ struct StoryCardView: View {
                 // Time
                 Label(story.timeAgo, systemImage: "clock")
                     .foregroundColor(.secondary)
-                
-                // Comments button
-                Button {
-                    showComments = true
-                } label: {
-                    Label("\(story.commentCount)", systemImage: "bubble.right")
-                        .foregroundColor(.blue)
-                }
-                .buttonStyle(.plain)
-                .help("View comments")
                 
                 Spacer()
                 
@@ -73,7 +69,21 @@ struct StoryCardView: View {
             CommentsView(story: story)
         }
     }
-    
+
+    private var commentsButton: some View {
+        Button {
+            showComments = true
+        } label: {
+            Label("\(story.commentCount) Comments", systemImage: "bubble.right.fill")
+                .font(.subheadline.weight(.semibold))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(.blue)
+        .help("View comments")
+    }
+     
     private func openStoryInBrowser() {
         if let url = story.storyURL {
             NSWorkspace.shared.open(url)
