@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - View
+
 struct CommentsView: View {
     let story: Story
     
@@ -204,7 +206,7 @@ struct CommentTreeView: View {
     }
 }
 
-// MARK: - View Model
+// MARK: - ViewModel
 
 @MainActor
 class CommentsViewModel: ObservableObject {
@@ -212,7 +214,11 @@ class CommentsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: HackerNewsErrorEnum?
     
-    private let service = HackerNewsService()
+    private let service: HackerNewsService
+    
+    init(service: HackerNewsService = HackerNewsService()) {
+        self.service = service
+    }
     
     func loadComments(for story: Story) async {
         isLoading = true
@@ -222,13 +228,15 @@ class CommentsViewModel: ObservableObject {
             comments = try await service.fetchCommentTrees(for: story, maxDepth: 5)
         } catch let hnError as HackerNewsErrorEnum {
             error = hnError
-        } catch {
-            self.error = .networkError(error)
+        } catch let err {
+            error = .networkError(err)
         }
         
         isLoading = false
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     CommentsView(story: Story(

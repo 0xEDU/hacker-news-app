@@ -1,18 +1,20 @@
 import SwiftUI
 
+// MARK: - View
+
 struct StoryListView: View {
-    @StateObject private var service = HackerNewsService()
+    @StateObject private var viewModel = StoryListViewModel()
     @State private var searchText = ""
     @State private var searchTask: Task<Void, Never>?
     
     var body: some View {
         NavigationStack {
             Group {
-                if service.isLoading && service.stories.isEmpty {
+                if viewModel.isLoading && viewModel.stories.isEmpty {
                     loadingView
-                } else if let error = service.error {
+                } else if let error = viewModel.error {
                     errorView(error: error)
-                } else if service.stories.isEmpty {
+                } else if viewModel.stories.isEmpty {
                     emptyView
                 } else {
                     storyList
@@ -24,33 +26,33 @@ struct StoryListView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         Task {
-                            await service.fetchTopStories()
+                            await viewModel.fetchTopStories()
                         }
                     } label: {
                         Image(systemName: "arrow.clockwise")
-                            .rotationEffect(.degrees(service.isLoading ? 360 : 0))
+                            .rotationEffect(.degrees(viewModel.isLoading ? 360 : 0))
                             .animation(
-                                service.isLoading 
+                                viewModel.isLoading 
                                     ? .linear(duration: 1).repeatForever(autoreverses: false)
                                     : .default,
-                                value: service.isLoading
+                                value: viewModel.isLoading
                             )
                     }
-                    .disabled(service.isLoading)
+                    .disabled(viewModel.isLoading)
                     .help("Refresh stories")
                 }
             }
         }
         .frame(minWidth: 600, minHeight: 400)
         .task {
-            await service.fetchTopStories()
+            await viewModel.fetchTopStories()
         }
         .onChange(of: searchText) {
             searchTask?.cancel()
             searchTask = Task {
                 try? await Task.sleep(nanoseconds: 350_000_000)
                 guard !Task.isCancelled else { return }
-                await service.searchStories(query: searchText)
+                await viewModel.searchStories(query: searchText)
             }
         }
     }
@@ -81,7 +83,7 @@ struct StoryListView: View {
             
             Button("Retry") {
                 Task {
-                    await service.fetchTopStories()
+                    await viewModel.fetchTopStories()
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -93,7 +95,7 @@ struct StoryListView: View {
     private var storyList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(service.stories) { story in
+                ForEach(viewModel.stories) { story in
                     StoryCardView(story: story)
                 }
             }
@@ -102,7 +104,7 @@ struct StoryListView: View {
             .padding(.bottom)
         }
         .refreshable {
-            await service.fetchTopStories()
+            await viewModel.fetchTopStories()
         }
     }
     
@@ -122,10 +124,68 @@ struct StoryListView: View {
     }
 }
 
+// MARK: - ViewModel
+
 @MainActor
 class StoryListViewModel: ObservableObject {
-    private let service = HackerNewsService()
+    @Published var stories: [Story] = []
+    @Published var isLoading = false
+    @Published var error: HackerNewsErrorEnum?
+    
+    private let service: HackerNewsService
+    private var topStoriesCache: [Story] = []
+    
+    init(service: HackerNewsService = HackerNewsService()) {
+        self.service = service
+    }
+    
+    func fetchTopStories() async {
+        isLoading = true
+        error = nil
+        
+        do {
+            let fetchedStories = try await service.fetchTopStories()
+            stories = fetchedStories
+            topStoriesCache = fetchedStories
+        } catch let hnError as HackerNewsErrorEnum {
+            error = hnError
+        } catch let err {
+            error = .networkError(err)
+        }
+        
+        isLoading = false
+    }
+    
+    func searchStories(query: String) async {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else {
+            restoreTopStories()
+            return
+        }
+        
+        isLoading = true
+        error = nil
+        
+        do {
+            stories = try await service.searchStories(query: trimmedQuery)
+        } catch let hnError as HackerNewsErrorEnum {
+            error = hnError
+        } catch let err {
+            error = .networkError(err)
+        }
+        
+        isLoading = false
+    }
+    
+    func restoreTopStories() {
+        error = nil
+        if !topStoriesCache.isEmpty {
+            stories = topStoriesCache
+        }
+    }
 }
+
+// MARK: - Preview
 
 #Preview {
     StoryListView()

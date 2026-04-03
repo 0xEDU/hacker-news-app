@@ -1,77 +1,33 @@
 import Foundation
 
-@MainActor
-class HackerNewsService: ObservableObject {
-    @Published var stories: [Story] = []
-    @Published var isLoading = false
-    @Published var error: HackerNewsErrorEnum?
-    
+class HackerNewsService {
     private let baseURL = "https://hacker-news.firebaseio.com/v0"
     private let searchBaseURL = "https://hn.algolia.com/api/v1/search"
     private let storyCount = 30
     private let session: URLSession
-    private var topStoriesCache: [Story] = []
     
     init(session: URLSession = .shared) {
         self.session = session
     }
     
-    func fetchTopStories() async {
-        isLoading = true
-        error = nil
+    func fetchTopStories() async throws -> [Story] {
+        // Fetch top story IDs
+        let storyIDs = try await fetchStoryIDs()
         
-        do {
-            // Fetch top story IDs
-            let storyIDs = try await fetchStoryIDs()
-            
-            // Fetch first N stories concurrently
-            let limitedIDs = Array(storyIDs.prefix(storyCount))
-            let fetchedStories = try await fetchStories(ids: limitedIDs)
-            
-            // Sort by the original top stories order
-            let idOrder = Dictionary(uniqueKeysWithValues: limitedIDs.enumerated().map { ($1, $0) })
-            let sortedStories = fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
-            stories = sortedStories
-            topStoriesCache = sortedStories
-            
-        } catch let hnError as HackerNewsErrorEnum {
-            error = hnError
-        } catch {
-            self.error = .networkError(error)
-        }
+        // Fetch first N stories concurrently
+        let limitedIDs = Array(storyIDs.prefix(storyCount))
+        let fetchedStories = try await fetchStories(ids: limitedIDs)
         
-        isLoading = false
+        // Sort by the original top stories order
+        let idOrder = Dictionary(uniqueKeysWithValues: limitedIDs.enumerated().map { ($1, $0) })
+        return fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
     }
 
-    func searchStories(query: String) async {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedQuery.isEmpty else {
-            restoreTopStories()
-            return
-        }
-
-        isLoading = true
-        error = nil
-
-        do {
-            let searchIDs = try await fetchSearchStoryIDs(query: trimmedQuery)
-            let fetchedStories = try await fetchStories(ids: searchIDs)
-            let idOrder = Dictionary(uniqueKeysWithValues: searchIDs.enumerated().map { ($1, $0) })
-            stories = fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
-        } catch let hnError as HackerNewsErrorEnum {
-            error = hnError
-        } catch {
-            self.error = .networkError(error)
-        }
-
-        isLoading = false
-    }
-
-    func restoreTopStories() {
-        error = nil
-        if !topStoriesCache.isEmpty {
-            stories = topStoriesCache
-        }
+    func searchStories(query: String) async throws -> [Story] {
+        let searchIDs = try await fetchSearchStoryIDs(query: query)
+        let fetchedStories = try await fetchStories(ids: searchIDs)
+        let idOrder = Dictionary(uniqueKeysWithValues: searchIDs.enumerated().map { ($1, $0) })
+        return fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
     }
     
     private func fetchStoryIDs() async throws -> [Int] {
