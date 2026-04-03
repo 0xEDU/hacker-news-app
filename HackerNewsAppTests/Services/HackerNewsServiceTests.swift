@@ -1,7 +1,6 @@
 @testable import HackerNewsApp
 import XCTest
 
-@MainActor
 final class HackerNewsServiceTests: XCTestCase {
     
     var sut: HackerNewsService!
@@ -18,7 +17,7 @@ final class HackerNewsServiceTests: XCTestCase {
     
     // MARK: - Fetch Top Stories
     
-    func test_fetchTopStories_whenAPIReturnsValidData_shouldPopulateStories() async {
+    func test_fetchTopStories_whenAPIReturnsValidData_shouldReturnStories() async throws {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
             .success("[8863]".data(using: .utf8) ?? Data())
@@ -26,62 +25,59 @@ final class HackerNewsServiceTests: XCTestCase {
             .success(TestFixtures.storyJSON)
         
         // Act
-        await sut.fetchTopStories()
+        let stories = try await sut.fetchTopStories(limit: 30)
         
         // Assert
-        XCTAssertFalse(sut.stories.isEmpty)
-        XCTAssertNil(sut.error)
-        XCTAssertFalse(sut.isLoading)
+        XCTAssertFalse(stories.isEmpty)
+        XCTAssertEqual(stories.first?.id, 8863)
     }
     
-    func test_fetchTopStories_whenNetworkFails_shouldSetError() async {
+    func test_fetchTopStories_whenNetworkFails_shouldThrowNetworkError() async {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
             .failure(URLError(.notConnectedToInternet))
         
         // Act
-        await sut.fetchTopStories()
-        
-        // Assert
-        XCTAssertTrue(sut.stories.isEmpty)
-        XCTAssertNotNil(sut.error)
+        do {
+            _ = try await sut.fetchTopStories(limit: 30)
+            XCTFail("Expected fetchTopStories to throw")
+        } catch let error as HackerNewsErrorEnum {
+            guard case .networkError = error else {
+                return XCTFail("Expected network error, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected HackerNewsErrorEnum, got \(error)")
+        }
     }
     
-    func test_fetchTopStories_whenJSONIsInvalid_shouldSetDecodingError() async {
+    func test_fetchTopStories_whenJSONIsInvalid_shouldThrowDecodingError() async {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
             .success("invalid json".data(using: .utf8) ?? Data())
         
         // Act
-        await sut.fetchTopStories()
-        
-        // Assert
-        XCTAssertNotNil(sut.error)
+        do {
+            _ = try await sut.fetchTopStories(limit: 30)
+            XCTFail("Expected fetchTopStories to throw")
+        } catch let error as HackerNewsErrorEnum {
+            guard case .decodingError = error else {
+                return XCTFail("Expected decoding error, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected HackerNewsErrorEnum, got \(error)")
+        }
     }
     
-    func test_fetchTopStories_whenCompleted_shouldSetIsLoadingFalse() async {
+    func test_fetchTopStories_whenAPIReturnsEmptyArray_shouldReturnEmptyStories() async throws {
         // Arrange
         MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
             .success("[]".data(using: .utf8) ?? Data())
         
         // Act
-        await sut.fetchTopStories()
+        let stories = try await sut.fetchTopStories(limit: 30)
         
         // Assert
-        XCTAssertFalse(sut.isLoading)
-    }
-    
-    func test_fetchTopStories_whenAPIReturnsEmptyArray_shouldHaveEmptyStories() async {
-        // Arrange
-        MockURLProtocol.mockResponses["https://hacker-news.firebaseio.com/v0/topstories.json"] =
-            .success("[]".data(using: .utf8) ?? Data())
-        
-        // Act
-        await sut.fetchTopStories()
-        
-        // Assert
-        XCTAssertTrue(sut.stories.isEmpty)
-        XCTAssertNil(sut.error)
+        XCTAssertTrue(stories.isEmpty)
     }
     
     // MARK: - Fetch Comment
