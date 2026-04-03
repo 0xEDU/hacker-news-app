@@ -1,57 +1,62 @@
 import SwiftUI
 
+@MainActor
 struct StoryListView: View {
-    @StateObject private var service = HackerNewsService()
-    @State private var searchText = ""
-    @State private var searchTask: Task<Void, Never>?
+    @StateObject private var viewModel: StoryListViewModel
+
+    init() {
+        _viewModel = StateObject(wrappedValue: StoryListViewModel())
+    }
+
+    init(viewModel: StoryListViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         NavigationStack {
             Group {
-                if service.isLoading && service.stories.isEmpty {
+                if viewModel.isLoading && viewModel.stories.isEmpty {
                     loadingView
-                } else if let error = service.error {
+                } else if let error = viewModel.error {
                     errorView(error: error)
-                } else if service.stories.isEmpty {
+                } else if viewModel.stories.isEmpty {
                     emptyView
                 } else {
                     storyList
                 }
             }
             .navigationTitle("Hacker News")
-            .searchable(text: $searchText, prompt: "Search stories")
+            .searchable(
+                text: Binding(
+                    get: { viewModel.searchText },
+                    set: { viewModel.updateSearchText($0) }
+                ),
+                prompt: "Search stories"
+            )
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         Task {
-                            await service.fetchTopStories()
+                            await viewModel.refreshStories()
                         }
                     } label: {
                         Image(systemName: "arrow.clockwise")
-                            .rotationEffect(.degrees(service.isLoading ? 360 : 0))
+                            .rotationEffect(.degrees(viewModel.isLoading ? 360 : 0))
                             .animation(
-                                service.isLoading 
+                                viewModel.isLoading
                                     ? .linear(duration: 1).repeatForever(autoreverses: false)
                                     : .default,
-                                value: service.isLoading
+                                value: viewModel.isLoading
                             )
                     }
-                    .disabled(service.isLoading)
+                    .disabled(viewModel.isLoading)
                     .help("Refresh stories")
                 }
             }
         }
         .frame(minWidth: 600, minHeight: 400)
         .task {
-            await service.fetchTopStories()
-        }
-        .onChange(of: searchText) {
-            searchTask?.cancel()
-            searchTask = Task {
-                try? await Task.sleep(nanoseconds: 350_000_000)
-                guard !Task.isCancelled else { return }
-                await service.searchStories(query: searchText)
-            }
+            await viewModel.loadStoriesIfNeeded()
         }
     }
     
@@ -81,7 +86,7 @@ struct StoryListView: View {
             
             Button("Retry") {
                 Task {
-                    await service.fetchTopStories()
+                    await viewModel.refreshStories()
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -93,8 +98,11 @@ struct StoryListView: View {
     private var storyList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(service.stories) { story in
-                    StoryCardView(story: story)
+                ForEach(viewModel.stories) { story in
+                    StoryCardView(
+                        story: story,
+                        commentsViewModel: viewModel.makeCommentsViewModel()
+                    )
                 }
             }
             .padding(.horizontal)
@@ -102,7 +110,7 @@ struct StoryListView: View {
             .padding(.bottom)
         }
         .refreshable {
-            await service.fetchTopStories()
+            await viewModel.refreshStories()
         }
     }
     
@@ -111,20 +119,15 @@ struct StoryListView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 28))
                 .foregroundColor(.secondary)
-            Text(searchText.isEmpty ? "No stories available" : "No stories found")
+            Text(viewModel.searchText.isEmpty ? "No stories available" : "No stories found")
                 .font(.headline)
-            Text(searchText.isEmpty
+            Text(viewModel.searchText.isEmpty
                 ? "Try refreshing to fetch the latest stories."
                 : "Try a different search term.")
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-}
-
-@MainActor
-class StoryListViewModel: ObservableObject {
-    private let service = HackerNewsService()
 }
 
 #if DEBUG

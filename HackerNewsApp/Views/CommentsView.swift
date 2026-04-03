@@ -1,10 +1,20 @@
 import SwiftUI
 
+@MainActor
 struct CommentsView: View {
     let story: Story
     
-    @StateObject private var viewModel = CommentsViewModel()
-    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel: CommentsViewModel
+
+    init(story: Story) {
+        self.story = story
+        _viewModel = StateObject(wrappedValue: CommentsViewModel())
+    }
+
+    init(story: Story, viewModel: CommentsViewModel) {
+        self.story = story
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -127,6 +137,7 @@ struct CommentsView: View {
 
 // MARK: - Comment Tree View (recursive)
 
+@MainActor
 struct CommentTreeView: View {
     let tree: CommentTree
     
@@ -201,32 +212,6 @@ struct CommentTreeView: View {
         tree.children.reduce(0) { count, child in
             count + 1 + countAllChildren(child)
         }
-    }
-}
-
-// MARK: - View Model
-
-@MainActor
-class CommentsViewModel: ObservableObject {
-    @Published var comments: [CommentTree] = []
-    @Published var isLoading = false
-    @Published var error: HackerNewsErrorEnum?
-    
-    private let service = HackerNewsService()
-    
-    func loadComments(for story: Story) async {
-        isLoading = true
-        error = nil
-        
-        do {
-            comments = try await service.fetchCommentTrees(for: story, maxDepth: 5)
-        } catch let hnError as HackerNewsErrorEnum {
-            error = hnError
-        } catch {
-            self.error = .networkError(error)
-        }
-        
-        isLoading = false
     }
 }
 
