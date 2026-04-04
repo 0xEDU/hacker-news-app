@@ -24,6 +24,7 @@
 		A2000001228F0001000000003 /* HackerNewsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000003 /* HackerNewsServiceTests.swift */; };
 		A2000001228F0001000000004 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000004 /* MockURLProtocol.swift */; };
 		A2000001228F0001000000005 /* TestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000005 /* TestFixtures.swift */; };
+		A2000001228F0001000000006 /* StoryListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001228F0002000000006 /* StoryListViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		A2000001228F0002000000003 /* HackerNewsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsServiceTests.swift; sourceTree = "<group>"; };
 		A2000001228F0002000000004 /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		A2000001228F0002000000005 /* TestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFixtures.swift; sourceTree = "<group>"; };
+		A2000001228F0002000000006 /* StoryListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListViewModelTests.swift; sourceTree = "<group>"; };
 		A2000001228F0003000000001 /* HackerNewsAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HackerNewsAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -158,6 +160,7 @@
 			children = (
 				A2000001228F0005000000002 /* Models */,
 				A2000001228F0005000000003 /* Services */,
+				A2000001228F0005000000005 /* ViewModels */,
 				A2000001228F0005000000004 /* Helpers */,
 			);
 			path = HackerNewsAppTests;
@@ -187,6 +190,14 @@
 				A2000001228F0002000000005 /* TestFixtures.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		A2000001228F0005000000005 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A2000001228F0002000000006 /* StoryListViewModelTests.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -334,6 +345,7 @@
 				A2000001228F0001000000003 /* HackerNewsServiceTests.swift in Sources */,
 				A2000001228F0001000000004 /* MockURLProtocol.swift in Sources */,
 				A2000001228F0001000000005 /* TestFixtures.swift in Sources */,
+				A2000001228F0001000000006 /* StoryListViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

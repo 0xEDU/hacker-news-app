@@ -25,7 +25,7 @@ final class HackerNewsServiceTests: XCTestCase {
             .success(TestFixtures.storyJSON)
         
         // Act
-        let stories = try await sut.fetchTopStories(limit: 30)
+        let stories = try await sut.fetchTopStories(page: 0, limit: 30)
         
         // Assert
         XCTAssertFalse(stories.isEmpty)
@@ -39,7 +39,7 @@ final class HackerNewsServiceTests: XCTestCase {
         
         // Act
         do {
-            _ = try await sut.fetchTopStories(limit: 30)
+            _ = try await sut.fetchTopStories(page: 0, limit: 30)
             XCTFail("Expected fetchTopStories to throw")
         } catch let error as HackerNewsErrorEnum {
             guard case .networkError = error else {
@@ -57,7 +57,7 @@ final class HackerNewsServiceTests: XCTestCase {
         
         // Act
         do {
-            _ = try await sut.fetchTopStories(limit: 30)
+            _ = try await sut.fetchTopStories(page: 0, limit: 30)
             XCTFail("Expected fetchTopStories to throw")
         } catch let error as HackerNewsErrorEnum {
             guard case .decodingError = error else {
@@ -74,7 +74,7 @@ final class HackerNewsServiceTests: XCTestCase {
             .success("[]".data(using: .utf8) ?? Data())
         
         // Act
-        let stories = try await sut.fetchTopStories(limit: 30)
+        let stories = try await sut.fetchTopStories(page: 0, limit: 30)
         
         // Assert
         XCTAssertTrue(stories.isEmpty)

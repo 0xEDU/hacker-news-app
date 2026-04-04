@@ -103,6 +103,15 @@ struct StoryListView: View {
                         story: story,
                         commentsViewModel: viewModel.makeCommentsViewModel()
                     )
+                    .task {
+                        await viewModel.loadMoreStoriesIfNeeded(currentStory: story)
+                    }
+                }
+
+                if viewModel.isLoadingMore {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
                 }
             }
             .padding(.horizontal)

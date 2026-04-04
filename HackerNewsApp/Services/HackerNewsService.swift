@@ -1,8 +1,8 @@
 import Foundation
 
 protocol HackerNewsServing {
-    func fetchTopStories(limit: Int) async throws -> [Story]
-    func searchStories(query: String, limit: Int) async throws -> [Story]
+    func fetchTopStories(page: Int, limit: Int) async throws -> [Story]
+    func searchStories(query: String, page: Int, limit: Int) async throws -> [Story]
     func fetchComment(id: Int) async throws -> Comment?
     func fetchCommentTrees(for story: Story, maxDepth: Int) async throws -> [CommentTree]
 }
@@ -16,22 +16,22 @@ final class HackerNewsService: HackerNewsServing {
         self.session = session
     }
     
-    func fetchTopStories(limit: Int = 30) async throws -> [Story] {
+    func fetchTopStories(page: Int = 0, limit: Int = 30) async throws -> [Story] {
         let storyIDs = try await fetchStoryIDs()
-        let limitedIDs = Array(storyIDs.prefix(limit))
+        let limitedIDs = storyIDs.page(page, limit: limit)
         let fetchedStories = try await fetchStories(ids: limitedIDs)
         let idOrder = Dictionary(uniqueKeysWithValues: limitedIDs.enumerated().map { ($1, $0) })
         return fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
     }
 
-    func searchStories(query: String, limit: Int = 30) async throws -> [Story] {
+    func searchStories(query: String, page: Int = 0, limit: Int = 30) async throws -> [Story] {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedQuery.isEmpty else {
             return []
         }
 
         let searchIDs = try await fetchSearchStoryIDs(query: trimmedQuery)
-        let limitedIDs = Array(searchIDs.prefix(limit))
+        let limitedIDs = searchIDs.page(page, limit: limit)
         let fetchedStories = try await fetchStories(ids: limitedIDs)
         let idOrder = Dictionary(uniqueKeysWithValues: limitedIDs.enumerated().map { ($1, $0) })
         return fetchedStories.sorted { (idOrder[$0.id] ?? 0) < (idOrder[$1.id] ?? 0) }
@@ -172,6 +172,18 @@ final class HackerNewsService: HackerNewsServing {
         return indexedTrees
             .sorted { $0.0 < $1.0 }
             .compactMap { $0.1 }
+    }
+}
+
+private extension Array {
+    func page(_ page: Int, limit: Int) -> [Element] {
+        guard limit > 0 else { return [] }
+
+        let startIndex = Swift.max(page, 0) * limit
+        guard startIndex < count else { return [] }
+
+        let endIndex = Swift.min(startIndex + limit, count)
+        return Array(self[startIndex..<endIndex])
     }
 }
 
